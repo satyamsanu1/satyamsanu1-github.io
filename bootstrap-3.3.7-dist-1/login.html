@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Signup | Life Style Store</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <script src="js/jquery.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+</head>
+
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" dat-target="#myNavbar1">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="index.html">Lifestyle Store</a>
+            </div>
+            <div class="collapse navbar-collapse" id="myNavbar1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="signup.html"><span class="glyphicon glyphicon-user"></span> Signup</a></li>
+                    <li><a href="login.html"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid decor_bg" id="content">
+        <div class="row">
+            <div class="container">
+                <div class="col-lg-4 col-lg-offset-4 col-md-6 col-md-offset-3">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h4>LOGIN</h4>
+                        </div>
+                        <div class="panel-body">
+                            <p class="text-warning"><i>Login to make a purchase</i></p>
+                            <form onsubmit="return validate()" name="loginForm" method="post">
+                                <div class="form-group">
+                                    <input type="email" class="form-control" placeholder="Email" name="email">
+                                </div>
+                                <div class="form-group">
+                                    <input type="password" class="form-control" placeholder="Password" name="password">
+                                </div>
+                                <button type="submit" name="submit" class="btn btn-primary">
+                                    Login</button><br><br>
+                            </form><br />
+                        </div>
+                        <div class="panel-footer">
+                            <p>Don't have an account? <a href="signup.html">Register</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer>
+        <div class="container">
+            <center>
+                <p>Copyright &copy; Lifestyle Store. All Rights Reserved | Contact Us: +91 90000 00000</p>
+            </center>
+        </div>
+    </footer>
+    <script>
+                function emptyCartDataOnLogout() {
+            fetch('http://localhost:3000/carts', {
+                method: 'GET', // or 'PUT'
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach((product) => {
+                        fetch(`http://localhost:3000/carts/${product.id}`, {
+                            method: 'DELETE', // or 'PUT'
+                            headers: {
+                                'Content-Type': 'application/json',
+                            }
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log('items in the cart is deleted', data);
+                            })
+                            .catch((error) => {
+                                console.error('Error:', error);
+                            });
+                    });
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+                return false;
+        }
+        function validate() {
+            var email = document.loginForm.email.value;
+            var password = document.loginForm.password.value;
+
+            fetch(`http://localhost:3000/users?email=${email}&password=${password}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    if (data.length > 0) {
+                        setTimeout(function () {
+                            window.location.replace("products.html");
+                        }, 100);
+                        sessionStorage.setItem("isLoggedIn", true);
+                        sessionStorage.setItem("loggedInUserEmail", document.loginForm.email.value);
+                        alert("Log In Successful");
+                    }
+                    else {
+                        alert("Login Failed!! Please provide a valid credentials");
+                        sessionStorage.setItem("isLoggedIn", false);
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+            return false;
+        }
+
+        window.addEventListener('DOMContentLoaded', () => emptyCartDataOnLogout());
+
+    </script>
+</body>
+
+</html>
